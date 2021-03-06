@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: RecommendationService
+grpc:
+  server:
+    port: 9000
