@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: AdService
+grpc:
+  server:
+    port: 9000
