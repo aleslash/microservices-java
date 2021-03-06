@@ -3,4 +3,4 @@ spring:
     name: CurrencyService
 grpc:
   server:
-    port: 9898
+    port: 9000
