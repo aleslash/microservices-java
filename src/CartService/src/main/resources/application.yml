@@ -1,0 +1,7 @@
+
+spring:
+  application:
+    name: CartService
+grpc:
+  server:
+    port: 9000
