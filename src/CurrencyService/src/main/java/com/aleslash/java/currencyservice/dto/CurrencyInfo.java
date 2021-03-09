@@ -9,16 +9,16 @@ public class CurrencyInfo {
         this.currency = currency;
     }
 
-    public String getConversionFromEUR() {
+    public Long getConversionFromEUR() {
         return conversionFromEUR;
     }
 
-    public void setConversionFromEUR(String conversionFromEUR) {
+    public void setConversionFromEUR(Long conversionFromEUR) {
         this.conversionFromEUR = conversionFromEUR;
     }
 
     private String currency;
-    private String conversionFromEUR;
+    private Long conversionFromEUR;
 
 
 }

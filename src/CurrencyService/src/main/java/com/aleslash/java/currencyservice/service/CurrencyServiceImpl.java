@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @GrpcService
@@ -21,6 +22,16 @@ public class CurrencyServiceImpl extends CurrencyServiceGrpc.CurrencyServiceImpl
     @Override
     public void getSupportedCurrencies(Empty request, StreamObserver<GetSupportedCurrenciesResponse> responseObserver) {
 //        super.getSupportedCurrencies(request, responseObserver);
+        List<CurrencyInfo> currencyInfos = getCurrencyInfos();
+
+        GetSupportedCurrenciesResponse response = GetSupportedCurrenciesResponse.newBuilder()
+                .addAllCurrencyCodes(currencyInfos.stream().map(currencyInfo -> currencyInfo.getCurrency()).collect(Collectors.toList()))
+                .build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+
+    private List<CurrencyInfo> getCurrencyInfos() {
         List<CurrencyInfo> currencyInfos = Collections.emptyList();
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -31,29 +42,39 @@ public class CurrencyServiceImpl extends CurrencyServiceGrpc.CurrencyServiceImpl
         catch (Exception ex) {
             System.out.println("Erro ao ler arquivo: " + ex.toString());
         }
-
-        for (CurrencyInfo currencyInfo: currencyInfos) {
-            System.out.println(currencyInfo);
-        }
-
-        GetSupportedCurrenciesResponse response = GetSupportedCurrenciesResponse.newBuilder()
-//                .addAllCurrencyCodes(currencyInfos.iterator().)
-                .addCurrencyCodes("BRL")
-                .addCurrencyCodes("USD")
-                .build();
-        responseObserver.onNext(response);
-        responseObserver.onCompleted();
+        return currencyInfos;
     }
 
     @Override
     public void convert(CurrencyConversionRequest request, StreamObserver<Money> responseObserver) {
 //        super.convert(request, responseObserver);
-        Money response = Money.newBuilder()
-                .setCurrencyCode("BRL")
-                .setUnits(4)
-                .setNanos(750000000)
+        List<CurrencyInfo> currencyInfos = getCurrencyInfos();
+        CurrencyInfo currrencyFrom = currencyInfos.stream().filter(
+                        currencyInfo ->
+                                currencyInfo.getCurrency().equalsIgnoreCase(request.getFrom().getCurrencyCode())
+                ).collect(Collectors.toList()).get(0);
+
+        CurrencyInfo currencyTo = currencyInfos.stream().filter(
+                currencyInfo ->
+                        currencyInfo.getCurrency().equalsIgnoreCase(request.getToCode())
+        ).collect(Collectors.toList()).get(0);
+
+        //Converter primeiro para euros
+        Money euros = Money.newBuilder()
+                .setCurrencyCode("EUR")
+                .setUnits(request.getFrom().getUnits() /currrencyFrom.getConversionFromEUR())
+                .setNanos((int) (request.getFrom().getNanos() /currrencyFrom.getConversionFromEUR()))
                 .build();
-        responseObserver.onNext(response);
+
+        //Converter de euros para a moeda solicitada
+
+        Money moneyTo = Money.newBuilder()
+                .setCurrencyCode(currencyTo.getCurrency())
+                .setUnits(euros.getUnits() * currencyTo.getConversionFromEUR())
+                .setNanos((int) (euros.getNanos() * currencyTo.getConversionFromEUR()))
+                .build();
+
+        responseObserver.onNext(moneyTo);
         responseObserver.onCompleted();
     }
 }
