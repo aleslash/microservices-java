@@ -8,7 +8,6 @@ import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,7 +20,6 @@ public class CurrencyServiceImpl extends CurrencyServiceGrpc.CurrencyServiceImpl
 
     @Override
     public void getSupportedCurrencies(Empty request, StreamObserver<GetSupportedCurrenciesResponse> responseObserver) {
-//        super.getSupportedCurrencies(request, responseObserver);
         List<CurrencyInfo> currencyInfos = getCurrencyInfos();
 
         GetSupportedCurrenciesResponse response = GetSupportedCurrenciesResponse.newBuilder()
@@ -36,7 +34,7 @@ public class CurrencyServiceImpl extends CurrencyServiceGrpc.CurrencyServiceImpl
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             currencyInfos = objectMapper.readValue(
-                    Files.readString(currencyDataResource.getFile().toPath()),
+                    currencyDataResource.getInputStream(),
                             new TypeReference<List<CurrencyInfo>>(){});
         }
         catch (Exception ex) {
@@ -47,7 +45,6 @@ public class CurrencyServiceImpl extends CurrencyServiceGrpc.CurrencyServiceImpl
 
     @Override
     public void convert(CurrencyConversionRequest request, StreamObserver<Money> responseObserver) {
-//        super.convert(request, responseObserver);
         List<CurrencyInfo> currencyInfos = getCurrencyInfos();
         CurrencyInfo currencyFrom = currencyInfos.stream().filter(
                         currencyInfo ->
