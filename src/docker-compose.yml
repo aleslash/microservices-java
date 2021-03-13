@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+  currency:
+    build:
+      context: CurrencyService
+      dockerfile: Dockerfile
+    ports:
+      - 9001:9000
+
