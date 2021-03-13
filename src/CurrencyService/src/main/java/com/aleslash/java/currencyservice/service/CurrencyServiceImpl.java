@@ -49,7 +49,7 @@ public class CurrencyServiceImpl extends CurrencyServiceGrpc.CurrencyServiceImpl
     public void convert(CurrencyConversionRequest request, StreamObserver<Money> responseObserver) {
 //        super.convert(request, responseObserver);
         List<CurrencyInfo> currencyInfos = getCurrencyInfos();
-        CurrencyInfo currrencyFrom = currencyInfos.stream().filter(
+        CurrencyInfo currencyFrom = currencyInfos.stream().filter(
                         currencyInfo ->
                                 currencyInfo.getCurrency().equalsIgnoreCase(request.getFrom().getCurrencyCode())
                 ).collect(Collectors.toList()).get(0);
@@ -62,8 +62,8 @@ public class CurrencyServiceImpl extends CurrencyServiceGrpc.CurrencyServiceImpl
         //Converter primeiro para euros
         Money euros = Money.newBuilder()
                 .setCurrencyCode("EUR")
-                .setUnits(request.getFrom().getUnits() /currrencyFrom.getConversionFromEUR())
-                .setNanos((int) (request.getFrom().getNanos() /currrencyFrom.getConversionFromEUR()))
+                .setUnits(request.getFrom().getUnits() /currencyFrom.getConversionFromEUR())
+                .setNanos((int) (request.getFrom().getNanos() /currencyFrom.getConversionFromEUR()))
                 .build();
 
         //Converter de euros para a moeda solicitada
