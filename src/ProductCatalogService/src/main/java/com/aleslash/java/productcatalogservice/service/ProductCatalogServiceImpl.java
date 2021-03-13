@@ -1,29 +1,38 @@
 package com.aleslash.java.productcatalogservice.service;
 
 import com.aleslash.java.productcatalog.*;
+import com.aleslash.java.productcatalogservice.dto.ProductInfo;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 
+import java.nio.file.Files;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @GrpcService
 public class ProductCatalogServiceImpl extends ProductCatalogServiceGrpc.ProductCatalogServiceImplBase {
+
+    @Value("classpath:static/products.json")
+    Resource productDataResource;
+
     @Override
     public void listProducts(Empty request, StreamObserver<ListProductsResponse> responseObserver) {
-//        super.listProducts(request, responseObserver);
+
+        List<ProductInfo> productInfos = getProductsCatalog();
+        for (ProductInfo productInfo : productInfos ) {
+            System.out.println(productInfo.toString());
+        }
+
         ListProductsResponse response = ListProductsResponse.newBuilder()
-                .addProducts(Product.newBuilder()
-                        .addCategories("CategoryA")
-                        .setDescription("DescriptionA")
-                        .setId(UUID.randomUUID().toString())
-                        .setName("ProductA")
-                        .setPicture("productA.jpg")
-                        .setPriceUsd(Money.newBuilder()
-                                .setCurrencyCode("USD")
-                                .setUnits(2)
-                                .setNanos(750000000)
-                                .build())
-                        .build())
+                .addAllProducts(productInfos.stream().map(
+                        productInfo -> productInfo.toProduct()).collect(Collectors.toList()))
                 .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
@@ -31,41 +40,53 @@ public class ProductCatalogServiceImpl extends ProductCatalogServiceGrpc.Product
 
     @Override
     public void getProduct(GetProductRequest request, StreamObserver<Product> responseObserver) {
-//        super.getProduct(request, responseObserver);
-        Product response = Product.newBuilder()
-                .addCategories("CategoryA")
-                .setDescription("DescriptionA")
-                .setId(request.getId())
-                .setName("ProductA")
-                .setPicture("productA.jpg")
-                .setPriceUsd(Money.newBuilder()
-                        .setCurrencyCode("USD")
-                        .setUnits(2)
-                        .setNanos(750000000)
-                        .build())
-                .build();
+
+        List<ProductInfo> productInfos = getProductsCatalog();
+        List<ProductInfo> productInfosFiltered = productInfos.stream()
+                .filter(
+                        productInfo -> productInfo.getId().equalsIgnoreCase(request.getId()))
+                .collect(Collectors.toList());
+
+        if(productInfosFiltered.size() < 1) {
+            responseObserver.onError(Status.NOT_FOUND.withDescription("no product with ID " + request.getId()).asException());
+        }
+
+        Product response = productInfosFiltered.get(0).toProduct();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
 
     @Override
     public void searchProducts(SearchProductsRequest request, StreamObserver<SearchProductsResponse> responseObserver) {
-//        super.searchProducts(request, responseObserver);
+
+        List<ProductInfo> productInfos = getProductsCatalog();
+        List<ProductInfo> productInfosFiltered = productInfos.stream()
+                .filter(
+                        productInfo -> productInfo.getName().toLowerCase().contains(request.getQuery().toLowerCase()) ||
+                                productInfo.getDescription().toLowerCase().contains(request.getQuery().toLowerCase()))
+                .collect(Collectors.toList());
+
         SearchProductsResponse response = SearchProductsResponse.newBuilder()
-                .addResults(Product.newBuilder()
-                        .addCategories("CategoryA")
-                        .setDescription("DescriptionA")
-                        .setId(UUID.randomUUID().toString())
-                        .setName("ProductA")
-                        .setPicture("productA.jpg")
-                        .setPriceUsd(Money.newBuilder()
-                                .setCurrencyCode("USD")
-                                .setUnits(2)
-                                .setNanos(750000000)
-                                .build())
-                        .build())
+                .addAllResults(productInfosFiltered.stream().map(
+                        productInfo -> productInfo.toProduct()).collect(Collectors.toList()))
                 .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+    }
+
+    private List<ProductInfo> getProductsCatalog(){
+        List<ProductInfo> productInfos = Collections.emptyList();
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            productInfos = objectMapper.readValue(
+                    Files.readString(productDataResource.getFile().toPath()),
+                    new TypeReference<List<ProductInfo>>(){});
+
+        } catch (Exception ex) {
+            System.out.println("Erro ao ler arquivo: " + ex.toString());
+        }
+
+        return productInfos;
     }
 }
