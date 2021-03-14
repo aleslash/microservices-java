@@ -11,7 +11,7 @@ COPY . .
 RUN chmod +x gradlew
 RUN ./gradlew bootJar
 
-FROM openjdk:11-slim
+FROM openjdk:11-jre-slim
 
 WORKDIR /
 COPY --from=builder build/libs/*.jar backend.jar
