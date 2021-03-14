@@ -10,10 +10,8 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 
-import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @GrpcService
@@ -26,10 +24,6 @@ public class ProductCatalogServiceImpl extends ProductCatalogServiceGrpc.Product
     public void listProducts(Empty request, StreamObserver<ListProductsResponse> responseObserver) {
 
         List<ProductInfo> productInfos = getProductsCatalog();
-        for (ProductInfo productInfo : productInfos ) {
-            System.out.println(productInfo.toString());
-        }
-
         ListProductsResponse response = ListProductsResponse.newBuilder()
                 .addAllProducts(productInfos.stream().map(
                         productInfo -> productInfo.toProduct()).collect(Collectors.toList()))
@@ -80,7 +74,7 @@ public class ProductCatalogServiceImpl extends ProductCatalogServiceGrpc.Product
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             productInfos = objectMapper.readValue(
-                    Files.readString(productDataResource.getFile().toPath()),
+                    productDataResource.getInputStream(),
                     new TypeReference<List<ProductInfo>>(){});
 
         } catch (Exception ex) {

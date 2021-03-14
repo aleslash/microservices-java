@@ -6,4 +6,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - 9001:9000
+  product-catalog:
+    build:
+      context: ProductCatalogService
+      dockerfile: Dockerfile
+    ports:
+      - 9002:9000
 
