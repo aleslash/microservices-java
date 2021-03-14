@@ -30,5 +30,12 @@ Com o compose, os microservices sobem nas portas:
 
 | microservice | porta |
 |---|---|
-|CurrencyService | 9001  |
-|ProductCatalogService | 9002  |
+|AdService|9001|
+|CartService|9002|
+|CheckoutService|9003|
+|CurrencyService | 9004 |
+|EmailService|9005|
+|PaymentService|9006|
+|ProductCatalogService | 9007 |
+|RecommendationService|9008|
+|ShippingService|9009|
