@@ -15,5 +15,20 @@ Os microsserviços seguem a seguinte estrutura de comunicação:
 
 [Docker](https://www.docker.com/)
 
+[BloomRPC](https://github.com/uw-labs/bloomrpc)
 
 
+# Como executar
+
+Clonar o repositório, abrir um terminal e executar o compose.
+
+`cd src`
+
+`docker-compose up --build`
+
+Com o compose, os microservices sobem nas portas:
+
+| microservice | porta |
+|---|---|
+|CurrencyService | 9001  |
+|ProductCatalogService | 9002  |

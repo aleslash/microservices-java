@@ -15,19 +15,38 @@ repositories {
 	mavenCentral()
 }
 
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.google.protobuf:protobuf-gradle-plugin:0.8.15'
-	implementation 'io.grpc:grpc-netty-shaded:1.36.0'
-	implementation 'io.grpc:grpc-protobuf:1.36.0'
-	implementation 'io.grpc:grpc-stub:1.36.0'
-	implementation 'net.devh:grpc-server-spring-boot-starter:2.11.0.RELEASE'
-	compileOnly 'org.apache.tomcat:annotations-api:6.0.53' // necessary for Java 9+
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+ext {
+    speed = project.hasProperty('speed') ? project.getProperty('speed') : false
+    offlineCompile = new File("$buildDir/output/lib")
+}
 
+dependencies {
+	if (speed) {
+        implementation fileTree(dir: offlineCompile, include: '*.jar')
+    } else {
+		implementation 'org.springframework.boot:spring-boot-starter-actuator'
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+		implementation 'com.google.protobuf:protobuf-gradle-plugin:0.8.15'
+		implementation 'io.grpc:grpc-netty-shaded:1.36.0'
+		implementation 'io.grpc:grpc-protobuf:1.36.0'
+		implementation 'io.grpc:grpc-stub:1.36.0'
+		implementation 'net.devh:grpc-server-spring-boot-starter:2.11.0.RELEASE'
+		implementation 'com.fasterxml.jackson.core:jackson-core:2.12.2'
+		implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.2'
+		compileOnly 'org.apache.tomcat:annotations-api:6.0.53' // necessary for Java 9+
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	}
 }
 
 test {
 	useJUnitPlatform()
+}
+
+// This to cache dependencies during Docker image building. First build will take time.
+// Subsequent build will be incremental.
+task downloadRepos(type: Copy) {
+    from configurations.compile
+    into offlineCompile
+    from configurations.runtime
+    into offlineCompile
 }
