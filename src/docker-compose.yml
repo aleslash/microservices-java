@@ -1,41 +1,59 @@
 version: "3.8"
 services:
-  # ad-service:
-  #   build:
-  #     context: AdService
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 9001:9000
-  # cart-service:
-  #   build:
-  #     context: CartService
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 9002:9000
-  # checkout-service:
-  #   build:
-  #     context: CheckoutService
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 9003:9000
-  # currency-service:
-  #   build:
-  #     context: CurrencyService
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 9004:9000
-  # email-service:
-  #   build:
-  #     context: EmailService
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 9005:9000
-  # payment-service:
-  #   build:
-  #     context: PaymentService
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 9006:9000
+  ad-service:
+    build:
+      context: AdService
+      dockerfile: Dockerfile
+    ports:
+      - 9001:9000
+    environment:
+      - GRPC_SERVER_PORT=9000
+      - SERVER_PORT=8080
+  cart-service:
+    build:
+      context: CartService
+      dockerfile: Dockerfile
+    ports:
+      - 9002:9000
+    environment:
+      - GRPC_SERVER_PORT=9000
+      - SERVER_PORT=8080
+  checkout-service:
+    build:
+      context: CheckoutService
+      dockerfile: Dockerfile
+    ports:
+      - 9003:9000
+    environment:
+      - GRPC_SERVER_PORT=9000
+      - SERVER_PORT=8080
+  currency-service:
+    build:
+      context: CurrencyService
+      dockerfile: Dockerfile
+    ports:
+      - 9004:9000
+    environment:
+      - GRPC_SERVER_PORT=9000
+      - SERVER_PORT=8080
+  email-service:
+    build:
+      context: EmailService
+      dockerfile: Dockerfile
+    ports:
+      - 9005:9000
+    environment:
+      - GRPC_SERVER_PORT=9000
+      - SERVER_PORT=8080
+  payment-service:
+    build:
+      context: PaymentService
+      dockerfile: Dockerfile
+    ports:
+      - 9006:9000
+    environment:
+      - GRPC_SERVER_PORT=9000
+      - SERVER_PORT=8080
   product-catalog-service:
     build:
       context: ProductCatalogService
@@ -52,15 +70,18 @@ services:
     ports:
       - 9008:9000
     depends_on:
-      - "product-catalog-service"
+      - product-catalog-service
     environment:
       - GRPC_SERVER_PORT=9000
       - SERVER_PORT=8080
       - PRODUCT_CATALOG_GRPC_ADDRESS=product-catalog-service
       - PRODUCT_CATALOG_GRPC_ADDRESS_PORT=9000
-  # shipping-service:
-  #   build:
-  #     context: ShippingService
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 9009:9000
+  shipping-service:
+    build:
+      context: ShippingService
+      dockerfile: Dockerfile
+    ports:
+      - 9009:9000
+    environment:
+      - GRPC_SERVER_PORT=9000
+      - SERVER_PORT=8080
