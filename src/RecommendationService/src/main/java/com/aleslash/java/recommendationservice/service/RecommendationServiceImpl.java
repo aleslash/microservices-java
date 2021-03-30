@@ -12,7 +12,10 @@ import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import net.devh.boot.grpc.server.service.GrpcService;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @GrpcService
 public class RecommendationServiceImpl extends RecommendationServiceGrpc.RecommendationServiceImplBase {
@@ -22,20 +25,15 @@ public class RecommendationServiceImpl extends RecommendationServiceGrpc.Recomme
 
     @Override
     public void listRecommendations(ListRecommendationsRequest request, StreamObserver<ListRecommendationsResponse> responseObserver) {
-        //fetch list of products from product catalog stub
         ListProductsResponse listProductsResponse = productCatalogServiceStub.listProducts(Empty.getDefaultInstance());
-        for (Product product: listProductsResponse.getProductsList()) {
-            System.out.println("Product: " + product.getName());
-        }
-
-        //sample list of indices to return
-
-        //fetch product ids from indices
-
-        //build and return response
-
+        List<Product> filteredProducts = listProductsResponse.getProductsList().stream()
+                .filter(product -> !request.getProductIdsList().contains(product.getId()))
+                .collect(Collectors.toList());
         ListRecommendationsResponse response = ListRecommendationsResponse.newBuilder()
-                .addProductIds(UUID.randomUUID().toString())
+                .addAllProductIds(filteredProducts.stream()
+                        .map(product -> product.getId())
+                        .limit(5)
+                        .collect(Collectors.toList()))
                 .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
