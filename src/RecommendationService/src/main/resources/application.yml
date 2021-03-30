@@ -3,4 +3,10 @@ spring:
     name: RecommendationService
 grpc:
   server:
-    port: 9000
+    port: ${GRPC_SERVER_PORT:9008}
+  client:
+    product-catalog:
+      address: static://${PRODUCT_CATALOG_GRPC_ADDRESS:localhost}:${PRODUCT_CATALOG_GRPC_ADDRESS_PORT:9007}
+      negotiationType: PLAINTEXT
+server:
+  port: ${SERVER_PORT:8108}

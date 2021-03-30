@@ -4,4 +4,6 @@ spring:
     name: CartService
 grpc:
   server:
-    port: 9000
+    port: ${GRPC_SERVER_PORT:9002}
+server:
+  port: ${SERVER_PORT:8102}
