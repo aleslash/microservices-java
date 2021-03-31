@@ -10,3 +10,11 @@ grpc:
       negotiationType: PLAINTEXT
 server:
   port: ${SERVER_PORT:8108}
+management:
+  endpoint:
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
