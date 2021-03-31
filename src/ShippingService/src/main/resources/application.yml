@@ -6,3 +6,11 @@ grpc:
     port: ${GRPC_SERVER_PORT:9009}
 server:
   port: ${SERVER_PORT:8109}
+management:
+  endpoint:
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
