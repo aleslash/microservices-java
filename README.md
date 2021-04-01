@@ -42,3 +42,11 @@ Com o compose, os microservices sobem nas portas:
 |redis|6379|
 |prometheus|9090|
 |frontend|8080|
+|loadgenerator|N/A|
+
+## Troubleshooting
+
+Em caso do erro abaixo ao executar o loadgenerator, verificar o EOL do arquivo [loadgen.sh](src/loadgenerator/loadgen.sh). Deve ser LF e não CRLF. Erro bem comum em ambientes windows.
+```apache
+loadgenerator_1            | /bin/sh: 1: ./loadgen.sh: not found
+src_loadgenerator_1 exited with code 127
