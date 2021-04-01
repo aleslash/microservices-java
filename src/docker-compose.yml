@@ -101,6 +101,25 @@ services:
       - CHECKOUT_SERVICE_ADDR=checkout-service:9000
       - AD_SERVICE_ADDR=ad-service:9000
       - ENV_PLATFORM=onprem
+    depends_on:
+      - ad-service
+      - cart-service
+      - checkout-service
+      - currency-service
+      - email-service
+      - payment-service
+      - product-catalog-service
+      - recommendation-service
+      - shipping-service
+  loadgenerator:
+    build:
+      context:  loadgenerator
+      dockerfile: Dockerfile
+    environment: 
+      - FRONTEND_ADDR=frontend:8080
+      - USERS=10
+    depends_on: 
+      - frontend
 # Dependencias
   redis-cart:
     image: redis:alpine
