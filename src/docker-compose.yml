@@ -86,6 +86,21 @@ services:
     environment:
       - GRPC_SERVER_PORT=9000
       - SERVER_PORT=8080
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      - PRODUCT_CATALOG_SERVICE_ADDR=product-catalog-service:9000
+      - CURRENCY_SERVICE_ADDR=currency-service:9000
+      - CART_SERVICE_ADDR=cart-service:9000
+      - RECOMMENDATION_SERVICE_ADDR=recommendation-service:9000
+      - SHIPPING_SERVICE_ADDR=shipping-service:9000
+      - CHECKOUT_SERVICE_ADDR=checkout-service:9000
+      - AD_SERVICE_ADDR=ad-service:9000
+      - ENV_PLATFORM=onprem
 # Dependencias
   redis-cart:
     image: redis:alpine
