@@ -4,6 +4,8 @@ option java_multiple_files = true;
 option java_outer_classname = "CartProto";
 option java_package = "com.aleslash.java.cart";
 
+package hipstershop;
+
 service CartService {
     rpc AddItem(AddItemRequest) returns (Empty) {}
     rpc GetCart(GetCartRequest) returns (Cart) {}

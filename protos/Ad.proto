@@ -4,6 +4,8 @@ option java_multiple_files = true;
 option java_outer_classname = "AdProto";
 option java_package = "com.aleslash.java.ad";
 
+package hipstershop;
+
 service AdService {
     rpc GetAds(AdRequest) returns (AdResponse) {}
 }

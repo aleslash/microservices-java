@@ -39,3 +39,6 @@ Com o compose, os microservices sobem nas portas:
 |ProductCatalogService | 9007 |
 |RecommendationService|9008|
 |ShippingService|9009|
+|redis|6379|
+|prometheus|9090|
+|frontend|8080|
