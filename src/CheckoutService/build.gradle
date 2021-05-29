@@ -20,6 +20,8 @@ ext {
 	offlineCompile = new File("$buildDir/output/lib")
 }
 
+def grpcVersion = '1.36.0'
+
 dependencies {
 	if (speed) {
 		implementation fileTree(dir: offlineCompile, include: '*.jar')
@@ -27,18 +29,29 @@ dependencies {
 		implementation 'org.springframework.boot:spring-boot-starter-actuator'
 		implementation 'org.springframework.boot:spring-boot-starter-web'
 		implementation 'com.google.protobuf:protobuf-gradle-plugin:0.8.15'
-		implementation 'io.grpc:grpc-netty-shaded:1.36.0'
-		implementation 'io.grpc:grpc-protobuf:1.36.0'
-		implementation 'io.grpc:grpc-stub:1.36.0'
+		implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
+		implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+		implementation "io.grpc:grpc-stub:${grpcVersion}"
 		implementation 'net.devh:grpc-server-spring-boot-starter:2.11.0.RELEASE'
 		compile 'io.micrometer:micrometer-registry-prometheus:latest.release'
 		compileOnly 'org.apache.tomcat:annotations-api:6.0.53' // necessary for Java 9+
 		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		testImplementation "io.grpc:grpc-testing:${grpcVersion}"
+		testImplementation "junit:junit:4.12"
+		testImplementation "org.mockito:mockito-core:3.4.0"
 	}
 }
 
 test {
 	useJUnitPlatform()
+}
+
+jacocoTestReport {
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: ['com/aleslash/java/checkout/**'])
+		}))
+	}
 }
 // This to cache dependencies during Docker image building. First build will take time.
 // Subsequent build will be incremental.

@@ -23,7 +23,6 @@ ext {
 
 def grpcVersion = '1.36.0'
 
-
 dependencies {
 	if (speed) {
 		implementation fileTree(dir: offlineCompile, include: '*.jar')
