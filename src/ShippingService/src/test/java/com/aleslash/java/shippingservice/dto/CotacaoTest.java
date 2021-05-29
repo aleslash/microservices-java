@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CotacaoTest {
+public class CotacaoTest {
 
     @Test
     @DisplayName("deve retornar String no formato correto com Cotacao de inteiros")
